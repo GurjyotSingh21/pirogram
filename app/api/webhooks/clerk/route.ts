@@ -37,7 +37,10 @@ export async function POST(req: Request) {
   if (eventType === "user.created") {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
 
-const email = email_addresses[0].email_address;
+const email =
+  email_addresses?.[0]?.email_address ||
+  evt.data.primary_email_address_id ||
+  "unknown@email.com";
 const firstName = first_name;
 const lastName = last_name;
 const imageUrl = image_url;
