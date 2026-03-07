@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { headers } from "next/headers"
 import { Webhook } from "svix"
 import { prisma } from "@/lib/prisma"
