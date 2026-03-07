@@ -12,6 +12,17 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id  // Clerk user ID
+  email     String
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  events    Event[]
+}
+
 model Event {
   id          String   @id @default(uuid())
   title       String
@@ -21,6 +32,9 @@ model Event {
   price       Float
   category    String
   imageUrl    String
+
   creatorId   String
+  creator     User     @relation(fields: [creatorId], references: [id])
+
   createdAt   DateTime @default(now())
 }
