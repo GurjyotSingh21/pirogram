@@ -18,21 +18,33 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const {
-      title,
-      description,
-      date,
-      location,
-      price,
-      category,
-      imageUrl,
-    } = body;
+    title,
+    description,
+    startDate,
+    endDate,
+    location,
+    price,
+    category,
+    imageUrl
+          } = body
 
+    
+    // Ensure user exists
+  await prisma.user.upsert({
+    where: { id: userId },
+    update: {},
+    create: {
+      id: userId,
+      email: ""
+    }
+  })
     //Save event to database
     const event = await prisma.event.create({
       data: {
         title,
         description,
-        date: new Date(date),
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         location,
         price,
         category,

@@ -14,7 +14,11 @@ const Navbar = () => {
       <Show when={"signed-in"}>
         <div className='w-1/3 flex items-center justify-between'>
       <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">Home</Button>
-      <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">Create Events</Button>
+      <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">
+        <Link href={"/events/create"}>
+        Create Events
+        </Link>
+      </Button>
       <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">Profile</Button>
       </div>
         <UserButton afterSwitchSessionUrl="/" />

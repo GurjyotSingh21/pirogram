@@ -28,7 +28,8 @@ model Event {
   id          String   @id @default(uuid())
   title       String
   description String
-  date        DateTime
+  startDate DateTime
+  endDate   DateTime
   location    String
   price       Float
   category    String
