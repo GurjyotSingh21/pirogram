@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   turbopack: {
-    rules: {},
+    rules: {
+      "*.md": {
+        loaders: ["ignore-loader"],
+      },
+      "*.cts": {
+        loaders: ["ignore-loader"],
+      },
+    },
   },
 };
 
