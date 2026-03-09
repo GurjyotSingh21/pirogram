@@ -33,7 +33,7 @@ import { useState } from "react"
 
 type EventFormValues = z.infer<typeof eventSchema>
 
-export default function CreateEventPage({ userId }: { userId: string }) {
+export default function CreateEventPage() {
 
   const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
