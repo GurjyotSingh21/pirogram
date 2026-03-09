@@ -34,16 +34,28 @@ export async function POST(req: Request) {
 
   const eventType = evt.type
 
-  if (eventType === "user.created") {
-    const { id, email_addresses, first_name, last_name, image_url } = evt.data;
+if (eventType === "user.created" || eventType === "user.updated") {
 
-const email =
-  email_addresses?.[0]?.email_address ||
-  evt.data.primary_email_address_id ||
-  "unknown@email.com";
-const firstName = first_name;
-const lastName = last_name;
-const imageUrl = image_url;
+  const {
+    id,
+    email_addresses,
+    primary_email_address_id,
+    first_name,
+    last_name,
+    image_url
+  } = evt.data;
+
+    console.log("EVENT TYPE:", evt.type)
+console.log("EVENT DATA:", evt.data)
+
+  const primaryEmail = email_addresses.find(
+    (email: any) => email.id === primary_email_address_id
+  );
+
+  const email = primaryEmail?.email_address ?? "";
+  const firstName = first_name ?? "";
+  const lastName = last_name ?? "";
+  const imageUrl = image_url ?? "";
 
       await prisma.user.upsert({
   where: {
