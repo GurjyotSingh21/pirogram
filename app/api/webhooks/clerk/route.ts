@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 import { headers } from "next/headers"
 import { Webhook } from "svix"
@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
 export async function POST(req: Request) {
-  const body = await req.text()
+
+  const payload = await req.text()
 
   const headerPayload = await headers()
 
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
   let evt: any
 
   try {
-    evt = wh.verify(body, {
+    evt = wh.verify(payload, {
       "svix-id": svixId,
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
@@ -32,37 +33,28 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid webhook", { status: 400 })
   }
 
-  const eventType = evt.type
+  if (evt.type === "user.created" || evt.type === "user.updated") {
 
-  if (eventType === "user.created" || eventType === "user.updated") {
-    const { id, email_addresses, first_name, last_name, image_url } = evt.data;
+    const { id, email_addresses, first_name, last_name, image_url } = evt.data
 
-const email =
-  email_addresses?.[0]?.email_address ||
-  evt.data.primary_email_address_id ||
-  "unknown@email.com";
-const firstName = first_name;
-const lastName = last_name;
-const imageUrl = image_url;
+    const email = email_addresses?.[0]?.email_address ?? ""
 
-      await prisma.user.upsert({
-  where: {
-    id,
-  },
-  update: {
-    email,
-    firstName,
-    lastName,
-    imageUrl,
-  },
-  create: {
-    id,
-    email,
-    firstName,
-    lastName,
-    imageUrl,
-  },
-});
+    await prisma.user.upsert({
+      where: { id },
+      update: {
+        email,
+        firstName: first_name,
+        lastName: last_name,
+        imageUrl: image_url,
+      },
+      create: {
+        id,
+        email,
+        firstName: first_name,
+        lastName: last_name,
+        imageUrl: image_url,
+      },
+    })
   }
 
   return NextResponse.json({ success: true })
