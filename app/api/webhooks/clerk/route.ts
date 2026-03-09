@@ -29,6 +29,9 @@ export async function POST(req: Request) {
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
     })
+
+  console.log("Webhook event type:", evt.type)
+  console.log("Webhook payload:", evt.data)
   } catch (err) {
     return new NextResponse("Invalid webhook", { status: 400 })
   }
@@ -37,7 +40,10 @@ export async function POST(req: Request) {
 
     const { id, email_addresses, first_name, last_name, image_url } = evt.data
 
-    const email = email_addresses?.[0]?.email_address ?? ""
+    const email =
+  evt.data.email_addresses?.[0]?.email_address ??
+  evt.data.primary_email_address?.email_address ??
+  ""
 
     await prisma.user.upsert({
       where: { id },
