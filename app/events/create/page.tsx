@@ -2,13 +2,14 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { eventSchema, EventFormValues } from "@/lib/validators/eventSchema"
-
+import { eventSchema} from "@/lib/validators/eventSchema"
+import { z } from "zod"
+import { FileUploader } from "@/components/shared/FileUploader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-
+import { useUploadThing } from "@/lib/uploadthing"
 import {
   Form,
   FormControl,
@@ -17,7 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-
 import {
   Select,
   SelectContent,
@@ -25,17 +25,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-import ImageUpload from "@/components/ImageUpload"
-
+//import ImageUpload from "@/components/ImageUpload"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-export default function CreateEventPage() {
+
+
+type EventFormValues = z.infer<typeof eventSchema>
+
+export default function CreateEventPage({ userId }: { userId: string }) {
 
   const router = useRouter()
+  const [files, setFiles] = useState<File[]>([])
 
-  const [imageUrl, setImageUrl] = useState("")
+  const { startUpload } = useUploadThing("eventImage")
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
@@ -44,34 +47,57 @@ export default function CreateEventPage() {
       description: "",
       category: "",
       location: "",
+      startDate: new Date(),
+      endDate: new Date(),
       price: 0,
-      url: "",
-      isFree: false
+      isFree: false,
+      imageUrl: "",
+      url: ""
     }
   })
 
-  const onSubmit = async (data: EventFormValues) => {
+  async function onSubmit(values: EventFormValues) {
 
-    const payload = {
-      ...data,
-      imageUrl
+  let uploadedImageUrl = values.imageUrl
+
+  try {
+
+    if (files.length > 0) {
+
+      const uploadedImages = await startUpload(files)
+
+      if (!uploadedImages || uploadedImages.length === 0) {
+        return
+      }
+
+      uploadedImageUrl = uploadedImages[0].ufsUrl
     }
 
-    const res = await fetch("/api/events", {
+    const response = await fetch("/api/events", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        ...values,
+        imageUrl: uploadedImageUrl
+      })
     })
 
-    if (res.ok) {
-      alert("Event created successfully")
-      router.push("/")
-    } else {
-      alert("Failed to create event")
+    if (!response.ok) {
+      throw new Error("Failed to create event")
     }
+
+    const event = await response.json()
+
+    form.reset()
+
+    router.push(`/`)
+
+  } catch (error) {
+    console.error(error)
   }
+}
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-6">
@@ -89,31 +115,37 @@ export default function CreateEventPage() {
           <div className="grid grid-cols-2 gap-6">
 
             <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Event title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+  control={form.control}
+  name="title"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="title">Event Title</FormLabel>
+      <FormControl>
+        <Input
+          id="title"
+          placeholder="Event title"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
             <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel htmlFor="category">Category</FormLabel>
 
                   <Select
+                    name="category"
                     onValueChange={field.onChange}
+                    defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger id="category">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                     </FormControl>
@@ -138,85 +170,122 @@ export default function CreateEventPage() {
 
           <div className="grid grid-cols-2 gap-6">
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      rows={6}
-                      placeholder="Event description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+           <FormField
+  control={form.control}
+  name="description"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="description">Description</FormLabel>
+      <FormControl>
+        <Textarea
+          className="h-72"
+          id="description"
+          rows={6}
+          placeholder="Describe your event for the participants to get a good understanding of it"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
-            <div>
-              <FormLabel>Event Image</FormLabel>
-              <ImageUpload onChange={setImageUrl} />
-            </div>
+<FormField
+  control={form.control}
+  name="imageUrl"
+  render={({ field }) => (
+    <FormItem>
+
+      <FormLabel htmlFor="imageUrl">
+        Event Image
+      </FormLabel>
+
+      <FormControl id="imageUrl">
+        <FileUploader
+  imageUrl={form.watch("imageUrl") || ""}
+  onFieldChange={(url) => form.setValue("imageUrl", url)}
+  setFiles={setFiles}
+/>
+      </FormControl>
+
+      <FormMessage />
+
+    </FormItem>
+  )}
+/>
 
           </div>
 
           {/* Location */}
 
           <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Event location or Online"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+  control={form.control}
+  name="location"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="location">
+        <img className="h-5" src="/assets/icons/location-grey.svg" alt="" />Location</FormLabel>
+      <FormControl>
+        <Input
+          id="location"
+          placeholder="Event location or Online"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
           {/* Dates */}
 
           <div className="grid grid-cols-2 gap-6">
 
             <FormField
-              control={form.control}
-              name="startDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Start Date</FormLabel>
-                  <Input
-                    type="datetime-local"
-                    onChange={(e) =>
-                      field.onChange(new Date(e.target.value))
-                    }
-                  />
-                </FormItem>
-              )}
-            />
+  control={form.control}
+  name="startDate"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="startDate">
+        <img className="h-5" src="/assets/icons/clock.svg" alt="" />Start Date</FormLabel>
+
+      <FormControl>
+        <Input
+          id="startDate"
+          name="startDate"
+          type="datetime-local"
+          value={field.value ? new Date(field.value).toISOString().slice(0,16) : ""}
+          onChange={(e) => field.onChange(new Date(e.target.value))}
+        />
+      </FormControl>
+
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
             <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>End Date</FormLabel>
-                  <Input
-                    type="datetime-local"
-                    onChange={(e) =>
-                      field.onChange(new Date(e.target.value))
-                    }
-                  />
-                </FormItem>
-              )}
-            />
+  control={form.control}
+  name="endDate"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="endDate">
+        <img className="h-5" src="/assets/icons/clock.svg" alt="" />End Date</FormLabel>
+
+      <FormControl>
+        <Input
+          id="endDate"
+          name="endDate"
+          type="datetime-local"
+          value={field.value ? new Date(field.value).toISOString().slice(0,16) : ""}
+          onChange={(e) => field.onChange(new Date(e.target.value))}
+        />
+      </FormControl>
+
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
           </div>
 
@@ -225,60 +294,67 @@ export default function CreateEventPage() {
           <div className="grid grid-cols-2 gap-6">
 
             <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(Number(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+  control={form.control}
+  name="price"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="price">
+        <img className="h-5" src="/assets/icons/dollar.svg" alt="" />Price</FormLabel>
+      <FormControl>
+        <Input
+          id="price"
+          name="price"
+          type="number"
+          value={field.value}
+          onChange={(e) => field.onChange(Number(e.target.value))}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
             <FormField
-              control={form.control}
-              name="url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://..."
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+  control={form.control}
+  name="url"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel htmlFor="url">
+        <img className="h-5" src="/assets/icons/link.svg" alt="" />Event URL</FormLabel>
+      <FormControl>
+        <Input
+          id="url"
+          placeholder="https://..."
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
           </div>
 
           {/* Free Ticket */}
 
           <FormField
-            control={form.control}
-            name="isFree"
-            render={({ field }) => (
-              <FormItem className="flex items-center gap-3">
+  control={form.control}
+  name="isFree"
+  render={({ field }) => (
+    <FormItem className="flex items-center gap-3">
 
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+      <Checkbox
+        id="isFree"
+        name="isFree"
+        checked={field.value}
+        onCheckedChange={field.onChange}
+      />
 
-                <FormLabel>Free Ticket</FormLabel>
+      <FormLabel htmlFor="isFree">Free Ticket</FormLabel>
 
-              </FormItem>
-            )}
-          />
+    </FormItem>
+  )}
+/>
 
           {/* Submit */}
 

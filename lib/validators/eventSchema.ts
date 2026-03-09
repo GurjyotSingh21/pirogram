@@ -5,7 +5,7 @@ export const eventSchema = z.object({
 
   description: z.string().min(10, "Description too short"),
 
-  category: z.string().min(1),
+  category: z.string().min(1, "Pick a category"),
 
   location: z.string().min(2),
 
@@ -15,7 +15,7 @@ export const eventSchema = z.object({
 
   price: z.number().min(0),
 
-  url: z.string().url().optional(),
+  url: z.url().optional(),
 
   imageUrl: z.string().optional(),
 
