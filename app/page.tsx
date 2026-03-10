@@ -2,12 +2,19 @@ import LandingPage from "@/components/landingPage/LandingPage";
 import Navbar from "../components/landingPage/Navbar";
 import CardsPage from "@/components/cardsPage/CardsPage";
 
-export default function Home() {
+import { getEvents } from "@/lib/actions/event.actions"
+
+export default async function Home() {
+
+  const events = await getEvents()
   return (
     <main>
       <Navbar />
       <LandingPage />
-      <CardsPage />
+      <CardsPage
+        events={events}
+      />
+
     </main>
   );
 }

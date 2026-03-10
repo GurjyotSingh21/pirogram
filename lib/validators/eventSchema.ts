@@ -15,7 +15,7 @@ export const eventSchema = z.object({
 
   price: z.number().min(0),
 
-  url: z.url().optional(),
+  url: z.url("Invalid URL").optional().or(z.literal("")),
 
   imageUrl: z.string().optional(),
 
