@@ -1,6 +1,6 @@
 import { getEventById } from "@/lib/actions/event.actions"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import TicketButton from "@/components/shared/TicketButton"
 
 type PageProps = {
   params: Promise<{
@@ -16,6 +16,8 @@ export default async function EventDetailsPage({ params }: PageProps) {
 
   if (!event) return notFound()
 
+  const priceLabel = event.price === 0 ? "FREE" : `$${event.price}`
+
   return (
     <div className="max-w-6xl mx-auto py-10 px-6">
 
@@ -30,17 +32,24 @@ export default async function EventDetailsPage({ params }: PageProps) {
           {event.title}
         </h1>
 
+      <div className='flex gap-2'>
+          <div className='h-full w-fit py-1 px-3  bg-green-300 text-green-800 rounded-full font-bold text-xs'>{priceLabel}</div>
+          <div className='h-full w-fit py-1 px-3  bg-gray-300 text-gray-600 rounded-full font-bold text-xs'>{event.category.charAt(0).toUpperCase()}{event.category.substring(1)}</div>
+        </div>
+
         <p className="text-gray-600">
           {event.description}
         </p>
 
         <div className="flex gap-6 text-gray-700">
 
-          <span>
+          <span className="flex items-center justify-between">
+            <img className="h-5" src="/assets/icons/location.svg" alt="" />
             {event.location}
           </span>
 
-          <span>
+          <span className="flex items-center justify-between">
+            <img className="h-5" src="/assets/icons/calendar.svg" alt="" />
             {new Date(event.startDate).toLocaleString("en-US", {
               weekday: "short",
               month: "short",
@@ -56,7 +65,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
 
           <img
             src={event.creator.imageUrl!}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
           />
 
           <span>
@@ -65,7 +74,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
 
         </div>
         
-        <Button>Buy Ticket</Button>
+        <TicketButton eventId={event.id} />
 
       </div>
 
