@@ -23,7 +23,11 @@ const Navbar = () => {
         Create Events
         </Link>
       </Button>
-      <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">Profile</Button>
+      <Button className="bg-transparent text-lg font-mono hover:text-gray-600 hover:bg-transparent text-black">
+        <Link href={"/profile"}>
+        Profile
+        </Link>
+        </Button>
       </div>
         <UserButton afterSwitchSessionUrl="/" />
       </Show>
