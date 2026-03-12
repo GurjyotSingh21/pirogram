@@ -18,7 +18,7 @@ export async function getEvents() {
   }
 }
 
-export async function getEventById(eventId: string) {
+export async function getEventById(eventId: string, userId?: string) {
   try {
 
     const event = await prisma.event.findUnique({
@@ -26,7 +26,13 @@ export async function getEventById(eventId: string) {
         id: eventId
       },
       include: {
-        creator: true
+        creator: true,
+        tickets: userId
+        ? {
+          where:{userId},
+          select: {ticketCode: true}
+        }
+        : false
       }
     })
 

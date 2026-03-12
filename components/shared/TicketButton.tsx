@@ -2,12 +2,16 @@
 
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function TicketButton({ eventId }: { eventId: string }) {
 
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
   async function handlePurchase() {
+
+    setLoading(true)
 
     const res = await fetch("/api/tickets", {
       method: "POST",
@@ -25,8 +29,25 @@ export default function TicketButton({ eventId }: { eventId: string }) {
   }
 
   return (
-    <Button onClick={handlePurchase}>
-      Get Ticket
+    <Button
+      onClick={handlePurchase}
+      disabled={loading}
+      className="flex items-center gap-2"
+    >
+
+      {loading ? (
+        <>
+          <img
+            src="/assets/spinner.svg"
+            alt="loading"
+            className="h-5 w-5 animate-spin"
+          />
+          Purchasing...
+        </>
+      ) : (
+        "Get Ticket"
+      )}
+
     </Button>
   )
 }

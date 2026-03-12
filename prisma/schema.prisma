@@ -53,4 +53,6 @@ model Ticket {
 
   event Event @relation(fields: [eventId], references: [id])
   user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
 }

@@ -1,6 +1,9 @@
 import { getEventById } from "@/lib/actions/event.actions"
 import { notFound } from "next/navigation"
 import TicketButton from "@/components/shared/TicketButton"
+import { auth } from "@clerk/nextjs/server"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 type PageProps = {
   params: Promise<{
@@ -12,9 +15,13 @@ export default async function EventDetailsPage({ params }: PageProps) {
 
   const { eventId } = await params
 
-  const event = await getEventById(eventId)
+  const { userId } = await auth()
+
+  const event = await getEventById(eventId, userId ?? undefined)
 
   if (!event) return notFound()
+
+  const userTicket = event.tickets?.[0]
 
   const priceLabel = event.price === 0 ? "FREE" : `$${event.price}`
 
@@ -32,7 +39,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
           {event.title}
         </h1>
 
-      <div className='flex gap-2'>
+        <div className='flex gap-2'>
           <div className='h-full w-fit py-1 px-3  bg-green-300 text-green-800 rounded-full font-bold text-xs'>{priceLabel}</div>
           <div className='h-full w-fit py-1 px-3  bg-gray-300 text-gray-600 rounded-full font-bold text-xs'>{event.category.charAt(0).toUpperCase()}{event.category.substring(1)}</div>
         </div>
@@ -73,8 +80,17 @@ export default async function EventDetailsPage({ params }: PageProps) {
           </span>
 
         </div>
-        
-        <TicketButton eventId={event.id} />
+
+
+        {userTicket ? (
+          <Link href={`/tickets/${userTicket.ticketCode}`}>
+            <Button>
+                Show Ticket
+            </Button>
+          </Link>
+        ) : (
+          <TicketButton eventId={event.id} />
+        )}
 
       </div>
 
