@@ -39,6 +39,7 @@ export default async function TicketPage({ params }: PageProps) {
         <p><strong>Ticket Code:</strong> {ticket.ticketCode}</p>
 
       </div>
+      <p className="px-5 text-xs text-shadow-2xs">Note: This ticket has been sent to your registered email</p>
 
     </div>
   )

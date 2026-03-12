@@ -38,7 +38,7 @@ export default function TicketButton({ eventId }: { eventId: string }) {
       {loading ? (
         <>
           <img
-            src="/assets/spinner.svg"
+            src="/assets/icons/spinner.svg"
             alt="loading"
             className="h-5 w-5 animate-spin"
           />

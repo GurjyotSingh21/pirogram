@@ -14,7 +14,7 @@ type CardsPageProps = {
 const CardsPage = ({ events }: CardsPageProps) => {
 
   return (
-    <div className='h-fit w-screen'>
+    <div id='events-section' className='h-fit w-screen'>
 
       <SearchBar />
 
