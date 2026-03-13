@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { eventSchema, EventFormValues } from "@/lib/validators/eventSchema"
 import { z } from "zod"
+import { EVENT_CATEGORIES } from "@/constants/categories"
 import { FileUploader } from "@/components/shared/FileUploader"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -152,29 +153,12 @@ export default function CreateEventPage() {
                     </FormControl>
 
                     <SelectContent className="max-h-60 overflow-y-auto">
-
-                      <SelectItem value="ai">Artificial Intelligence</SelectItem>
-                      <SelectItem value="blockchain">Blockchain</SelectItem>
-                      <SelectItem value="cloud">Cloud Computing</SelectItem>
-                      <SelectItem value="cybersecurity">Cybersecurity</SelectItem>
-                      <SelectItem value="data-science">Data Science</SelectItem>
-                      <SelectItem value="databases">Databases</SelectItem>
-                      <SelectItem value="devops">DevOps</SelectItem>
-                      <SelectItem value="game-dev">Game Development</SelectItem>
-                      <SelectItem value="iot">Internet of Things</SelectItem>
-                      <SelectItem value="java">Java</SelectItem>
-                      <SelectItem value="machine-learning">Machine Learning</SelectItem>
-                      <SelectItem value="mobile-dev">Mobile Development</SelectItem>
-                      <SelectItem value="networking">Networking</SelectItem>
-                      <SelectItem value="python">Python</SelectItem>
-                      <SelectItem value="robotics">Robotics</SelectItem>
-                      <SelectItem value="software-eng">Software Engineering</SelectItem>
-                      <SelectItem value="system-design">System Design</SelectItem>
-                      <SelectItem value="ui-ux">UI / UX</SelectItem>
-                      <SelectItem value="web-dev">Web Development</SelectItem>
-                      <SelectItem value="big-data">Big Data</SelectItem>
-
-                      <SelectItem value="general">General</SelectItem>
+                      
+                      {EVENT_CATEGORIES.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
 
                     </SelectContent>
 

@@ -1,0 +1,23 @@
+export const EVENT_CATEGORIES = [
+  { value: "ai", label: "Artificial Intelligence" },
+  { value: "big-data", label: "Big Data" },
+  { value: "blockchain", label: "Blockchain" },
+  { value: "cloud", label: "Cloud Computing" },
+  { value: "cybersecurity", label: "Cybersecurity" },
+  { value: "data-science", label: "Data Science" },
+  { value: "databases", label: "Databases" },
+  { value: "devops", label: "DevOps" },
+  { value: "game-dev", label: "Game Development" },
+  { value: "iot", label: "Internet of Things" },
+  { value: "java", label: "Java" },
+  { value: "machine-learning", label: "Machine Learning" },
+  { value: "mobile-dev", label: "Mobile Development" },
+  { value: "networking", label: "Networking" },
+  { value: "python", label: "Python" },
+  { value: "robotics", label: "Robotics" },
+  { value: "software-eng", label: "Software Engineering" },
+  { value: "system-design", label: "System Design" },
+  { value: "ui-ux", label: "UI / UX" },
+  { value: "web-dev", label: "Web Development" },
+  { value: "general", label: "General" }
+]
