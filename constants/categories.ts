@@ -21,3 +21,8 @@ export const EVENT_CATEGORIES = [
   { value: "web-dev", label: "Web Development" },
   { value: "general", label: "General" }
 ]
+
+export function getCategoryLabel(value: string) {
+  const category = EVENT_CATEGORIES.find(c => c.value === value)
+  return category?.label || value
+}

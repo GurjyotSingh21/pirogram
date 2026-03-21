@@ -1,3 +1,4 @@
+import CardImage from "@/components/cardsPage/CardImage"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 
@@ -27,6 +28,10 @@ export default async function TicketPage({ params }: PageProps) {
       <h1 className="text-3xl font-bold mb-6">
         Your Ticket
       </h1>
+
+      {/* <div className="flex items-center size-80">
+        <CardImage image={ticket.event.imageUrl} />
+      </div> */}
 
       <div className="border rounded-xl p-6 space-y-4">
 

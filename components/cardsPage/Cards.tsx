@@ -2,6 +2,7 @@ import { Button } from '../ui/button'
 import CardImage from './CardImage'
 import { Event, User } from "@prisma/client"
 import Link from "next/link"
+import { getCategoryLabel } from '@/constants/categories'
 
 type EventWithCreator = Event & {
   creator: User
@@ -19,7 +20,7 @@ export default function CardsPage({ event }: CardsProps) {
       <div className='h-5/9 w-full flex flex-col justify-between px-9 py-5'>
         <div className='flex gap-2'>
           <div className='h-full w-fit py-1 px-3  bg-green-300 text-green-800 rounded-full font-bold text-xs'>{priceLabel}</div>
-          <div className='h-full w-fit py-1 px-3  bg-gray-300 text-gray-600 rounded-full font-bold text-xs'>{event.category.charAt(0).toUpperCase()}{event.category.substring(1)}</div>
+          <div className='h-full w-fit py-1 px-3  bg-gray-300 text-gray-600 rounded-full font-bold text-xs'>{getCategoryLabel(event.category)}</div>
         </div>
         <h3 className='font-semibold text-gray-600'>{new Date(event.startDate).toLocaleString("en-US", {
           weekday: "short",
