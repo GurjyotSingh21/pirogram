@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 
@@ -55,6 +55,15 @@ export default function CreateEventPage() {
 
   const { isSubmitting } = form.formState
   const isFree = form.watch("isFree")
+
+  const start = form.watch("startDate")
+  const end = form.watch("endDate")
+
+  useEffect(() => {
+    if (end && start && end <= start) {
+      form.setValue("endDate", start)
+    }
+  }, [start])
 
   async function onSubmit(values: EventFormValues) {
 
@@ -280,6 +289,13 @@ export default function CreateEventPage() {
                         field.value
                           ? new Date(field.value).toLocaleString("sv-SE").slice(0, 16)
                           : ""
+                      }
+                      min={
+                        form.watch("startDate")
+                          ? new Date(form.watch("startDate"))
+                            .toLocaleString("sv-SE")
+                            .slice(0, 16)
+                          : undefined
                       }
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
