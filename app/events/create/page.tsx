@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { eventSchema, EventFormValues } from "@/lib/validators/eventSchema"
-import { z } from "zod"
 import { EVENT_CATEGORIES } from "@/constants/categories"
 import { FileUploader } from "@/components/shared/FileUploader"
 import { Button } from "@/components/ui/button"
@@ -26,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-//import ImageUpload from "@/components/ImageUpload"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -112,8 +110,6 @@ export default function CreateEventPage() {
           className="space-y-6"
         >
 
-          {/* Title + Category */}
-
           <div className="grid grid-cols-2 gap-6">
 
             <FormField
@@ -153,7 +149,7 @@ export default function CreateEventPage() {
                     </FormControl>
 
                     <SelectContent className="max-h-60 overflow-y-auto">
-                      
+
                       {EVENT_CATEGORIES.map((category) => (
                         <SelectItem key={category.value} value={category.value}>
                           {category.label}
@@ -170,8 +166,6 @@ export default function CreateEventPage() {
             />
 
           </div>
-
-          {/* Description + Image */}
 
           <div className="grid grid-cols-2 gap-6">
 
@@ -221,8 +215,6 @@ export default function CreateEventPage() {
 
           </div>
 
-          {/* Location */}
-
           <FormField
             control={form.control}
             name="location"
@@ -242,8 +234,6 @@ export default function CreateEventPage() {
             )}
           />
 
-          {/* Dates */}
-
           <div className="grid grid-cols-2 gap-6">
 
             <FormField
@@ -259,7 +249,11 @@ export default function CreateEventPage() {
                       id="startDate"
                       name="startDate"
                       type="datetime-local"
-                      value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                      value={
+                        field.value
+                          ? new Date(field.value).toLocaleString("sv-SE").slice(0, 16)
+                          : ""
+                      }
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
                   </FormControl>
@@ -282,7 +276,11 @@ export default function CreateEventPage() {
                       id="endDate"
                       name="endDate"
                       type="datetime-local"
-                      value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                      value={
+                        field.value
+                          ? new Date(field.value).toLocaleString("sv-SE").slice(0, 16)
+                          : ""
+                      }
                       onChange={(e) => field.onChange(new Date(e.target.value))}
                     />
                   </FormControl>
@@ -293,8 +291,6 @@ export default function CreateEventPage() {
             />
 
           </div>
-
-          {/* Price + URL */}
 
           <div className="grid grid-cols-2 gap-6">
 
@@ -340,8 +336,6 @@ export default function CreateEventPage() {
 
           </div>
 
-          {/* Free Ticket */}
-
           <FormField
             control={form.control}
             name="isFree"
@@ -367,7 +361,6 @@ export default function CreateEventPage() {
             )}
           />
 
-          {/* Submit */}
 
           <Button
             type="submit"
